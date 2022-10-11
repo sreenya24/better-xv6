@@ -89,3 +89,33 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+
+uint64 sigalarm(void)
+{
+    int ticks;
+    uint64 adrs;
+
+    if(argint(0, &ticks) < 0)
+        return -1;
+    else if(argaddr(1, &adrs) < 0)
+        return -1;
+
+    myproc()->alarmticks = ticks;
+    myproc()->alarmhandler = adrs;
+
+    return 0;
+}
+
+uint64 sigreturn(void)
+{
+    struct proc *p = myproc();
+    memmove(p->trapframe, p->alarm_trap, sizeof(struct trapframe));
+    kfree(p->alarm_trap);
+    
+    p->alarm_trap = 0; //Have to initialize
+    p->alarm_on = 0; //Have to initialize
+    p->curticks = 0; //Have to initialize
+
+    return 0;
+}
