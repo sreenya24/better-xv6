@@ -36,5 +36,6 @@ entry("getpid");
 entry("sbrk");
 entry("sleep");
 entry("uptime");
-entry("sigalarm");  //Entry for sigalarm syscall
-entry("sigreturn"); //Entry for sigreturn syscall
+entry("sigalarm");  
+entry("sigreturn"); 
+entry("trace");

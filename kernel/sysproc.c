@@ -119,3 +119,26 @@ uint64 sigreturn(void)
 
     return 0;
 }
+
+uint64
+sys_trace(void)
+{
+  int mask;
+  if(argint(0, &mask) < 0) return -1;
+  struct proc* p = myproc();
+  if(mask == 0)
+  {
+    for(int i = 0; i<30; i++)
+      p->trac[i] = 1;
+  }
+  else
+  {
+    for(int i = 1; i<30; i++)
+    {
+      mask = mask>>1;
+      if(mask%2 != 0)
+        p->trac[i] = 1;
+    }
+  }
+  return 0;
+}

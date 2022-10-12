@@ -314,8 +314,7 @@ int uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
   pte_t *pte;
   uint64 pa, i;
   uint flags;
-  char *mem;
-
+  
   for (i = 0; i < sz; i += PGSIZE)
   {
     if ((pte = walk(old, i, 0)) == 0)
@@ -325,12 +324,12 @@ int uvmcopy(pagetable_t old, pagetable_t new, uint64 sz)
     pa = PTE2PA(*pte);
     *pte = (*pte) & (~PTE_W);
     flags = PTE_FLAGS(*pte);
-    increase(pa);
+    increse(pa);
     // if((mem = kalloc()) == 0)
     //   goto err;
     // memmove(mem, (char*)pa, PGSIZE);
 
-    if (mappages(new, i, PGSIZE, (uint64)mem, flags) != 0)
+    if (mappages(new, i, PGSIZE, (uint64)pa, flags) != 0)
     {
       // kfree(mem);
       goto err;

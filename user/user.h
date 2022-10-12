@@ -24,6 +24,7 @@ int sleep(int);
 int uptime(void);
 int sigalarm(void);  // signal handling syscall from question 1 part 2
 int sigreturn(void); // signal handling syscall from question 1 part 2
+int trace(int);
 
 // ulib.c
 int stat(const char*, struct stat*);
