@@ -455,7 +455,45 @@ scheduler(void)
   struct cpu *c = mycpu();
   
   c->proc = 0;
-  for(;;){
+  #ifdef FCFS
+  for(;;)
+  {
+    intr_on();
+    struct proc *chosen = 0;
+    for(p = proc; p < &proc[NPROC]; p++)
+    {
+      acquire(&p->lock);
+      
+      if(p->state != RUNNABLE)
+      {  
+        continue;
+      }
+
+      if(p->create_time < chosen->create_time)
+      {
+        chosen = p;
+      }
+      {
+        chosen = p;
+      }
+      
+      release(&p->lock);
+    }
+    if(chosen == 0)
+    {
+      continue;
+    }
+
+    c->proc = chosen;
+    chosen->state = RUNNING;
+    swtch(&c->context, &chosen->context);
+    c->proc = 0;
+    release(&chosen->lock);
+  }
+  #endif
+  
+  for(;;)
+  {
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
 
