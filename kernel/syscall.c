@@ -132,6 +132,56 @@ static uint64 (*syscalls[])(void) = {
 [SYS_trace]   sys_trace,
 };
 
+static char *names[] = {
+[SYS_fork]    "fork",
+[SYS_exit]    "exit",
+[SYS_wait]    "wait",
+[SYS_pipe]    "pipe",
+[SYS_read]    "read",
+[SYS_kill]    "kill",
+[SYS_exec]    "exec",
+[SYS_fstat]   "fstat",
+[SYS_chdir]   "chdir",
+[SYS_dup]     "dup",
+[SYS_getpid]  "getpid",
+[SYS_sbrk]    "sbrk",
+[SYS_sleep]   "sleep",
+[SYS_uptime]  "uptime",
+[SYS_open]    "open",
+[SYS_write]   "write",
+[SYS_mknod]   "mknod",
+[SYS_unlink]  "unlink",
+[SYS_link]    "link",
+[SYS_mkdir]   "mkdir",
+[SYS_close]   "close",
+[SYS_trace]   "trace",
+};
+
+int syscallNos[] = {
+[SYS_fork] 0,
+[SYS_exit] 1,
+[SYS_wait] 1,
+[SYS_pipe] 1,
+[SYS_write] 3,
+[SYS_read] 3,
+[SYS_close] 1,
+[SYS_kill] 1,
+[SYS_exec] 2,
+[SYS_open] 2,
+[SYS_mknod] 3,
+[SYS_unlink] 1,
+[SYS_fstat] 2,
+[SYS_link] 2,
+[SYS_mkdir] 1,
+[SYS_chdir] 1,
+[SYS_dup] 1,
+[SYS_getpid] 0,
+[SYS_sbrk] 1,
+[SYS_sleep] 1,
+[SYS_uptime] 0,
+[SYS_trace] 1,
+};
+
 void
 syscall(void)
 {
@@ -148,4 +198,20 @@ syscall(void)
             p->pid, p->name, num);
     p->trapframe->a0 = -1;
   }
+
+  if (p->tracemask >> num) {
+	  printf("%d: syscall %s (", 
+			  p->pid, names[num]);
+
+    int ar;
+      for(int i = 0; i<syscallNos[num]; i++)
+      {
+        if(i != 0)
+          argint(i, &ar);
+        else ar = p->trapframe->a0;
+        printf("%d ", ar);                         
+      }
+        
+    printf(") -> %d\n", p->trapframe->a0);
+}
 }

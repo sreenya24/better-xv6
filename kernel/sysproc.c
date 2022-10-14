@@ -94,24 +94,9 @@ sys_uptime(void)
 uint64
 sys_trace(void)
 {
-  int mask;
-  int zero = 0;
-  argint(zero, &mask);
-  if(mask < 0) return -1;
-  struct proc* p = myproc();
-  if(mask == 0)
-  {
-    for(int i = 0; i<30; i++)
-      p->trac[i] = 1;
-  }
-  else
-  {
-    for(int i = 1; i<30; i++)
-    {
-      mask = mask>>1;
-      if(mask%2 != 0)
-        p->trac[i] = 1;
-    }
-  }
-  return 0;
+  argint(0, &myproc()->tracemask);
+  if (myproc()->tracemask < 0)
+		return -1;
+
+	return 0;
 }
