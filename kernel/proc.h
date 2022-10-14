@@ -108,6 +108,10 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  
+  int create_time;              // Process creation time
+  int terminate_time;           // Process termination time
+  int running_time;             // Process running time
 
   short trac[30];   
   
