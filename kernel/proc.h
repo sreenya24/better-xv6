@@ -116,7 +116,7 @@ struct proc {
   short trac[30];   
   
   // For alarm handling. May need to be rechecked
-  int alarmticks;
+  int ticks;
   int curticks;
   uint64 alarmhandler;
   int alarm_on;
