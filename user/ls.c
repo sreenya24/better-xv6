@@ -1,5 +1,5 @@
 #include "kernel/types.h"
-#include "kernel/stat.h"
+#include "kernel/stats.h"
 #include "user/user.h"
 #include "kernel/fs.h"
 
@@ -28,7 +28,7 @@ ls(char *path)
   char buf[512], *p;
   int fd;
   struct dirent de;
-  struct stat st;
+  struct stats st;
 
   if((fd = open(path, 0)) < 0){
     fprintf(2, "ls: cannot open %s\n", path);
@@ -60,7 +60,7 @@ ls(char *path)
         continue;
       memmove(p, de.name, DIRSIZ);
       p[DIRSIZ] = 0;
-      if(stat(buf, &st) < 0){
+      if(stats(buf, &st) < 0){
         printf("ls: cannot stat %s\n", buf);
         continue;
       }

@@ -13,7 +13,7 @@
 #include "riscv.h"
 #include "defs.h"
 #include "param.h"
-#include "stat.h"
+#include "stats.h"
 #include "spinlock.h"
 #include "proc.h"
 #include "sleeplock.h"
@@ -455,7 +455,7 @@ itrunc(struct inode *ip)
 // Copy stat information from inode.
 // Caller must hold ip->lock.
 void
-stati(struct inode *ip, struct stat *st)
+stati(struct inode *ip, struct stats *st)
 {
   st->dev = ip->dev;
   st->ino = ip->inum;

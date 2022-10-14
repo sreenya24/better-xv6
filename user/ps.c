@@ -1,8 +1,7 @@
 
-#include "types.h"
-#include "stat.h"
+#include "../kernel/types.h"
+#include "../kernel/stats.h"
 #include "user.h"
-#include "fcntl.h"
 
 int main(void){
   cps();

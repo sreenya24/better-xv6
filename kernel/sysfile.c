@@ -8,7 +8,7 @@
 #include "riscv.h"
 #include "defs.h"
 #include "param.h"
-#include "stat.h"
+#include "stats.h"
 #include "spinlock.h"
 #include "proc.h"
 #include "fs.h"

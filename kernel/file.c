@@ -10,7 +10,7 @@
 #include "spinlock.h"
 #include "sleeplock.h"
 #include "file.h"
-#include "stat.h"
+#include "stats.h"
 #include "proc.h"
 
 struct devsw devsw[NDEV];
@@ -88,7 +88,7 @@ int
 filestat(struct file *f, uint64 addr)
 {
   struct proc *p = myproc();
-  struct stat st;
+  struct stats st;
   
   if(f->type == FD_INODE || f->type == FD_DEVICE){
     ilock(f->ip);

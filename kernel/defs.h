@@ -6,7 +6,7 @@ struct pipe;
 struct proc;
 struct spinlock;
 struct sleeplock;
-struct stat;
+struct stats;
 struct superblock;
 
 // bio.c
@@ -50,7 +50,7 @@ int             namecmp(const char*, const char*);
 struct inode*   namei(char*);
 struct inode*   nameiparent(char*, char*);
 int             readi(struct inode*, int, uint64, uint, uint);
-void            stati(struct inode*, struct stat*);
+void            stati(struct inode*, struct stats*);
 int             writei(struct inode*, int, uint64, uint, uint);
 void            itrunc(struct inode*);
 

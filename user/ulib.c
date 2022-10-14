@@ -1,5 +1,5 @@
 #include "kernel/types.h"
-#include "kernel/stat.h"
+#include "kernel/stats.h"
 #include "kernel/fcntl.h"
 #include "user/user.h"
 
@@ -82,7 +82,7 @@ gets(char *buf, int max)
 }
 
 int
-stat(const char *n, struct stat *st)
+stats(const char *n, struct stats *st)
 {
   int fd;
   int r;
