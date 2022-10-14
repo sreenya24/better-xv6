@@ -136,6 +136,10 @@ UPROGS=\
 	$U/_strace\
 	$U/_ps\
 	$U/_nice\
+	$U/_schedulertest\
+
+EXTRA=\
+schedulertest.c\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
