@@ -41,3 +41,4 @@ entry("sigreturn");
 entry("trace");
 entry("cps");
 entry("chpr");
+entry("waitx");

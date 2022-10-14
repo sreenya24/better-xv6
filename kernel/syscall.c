@@ -85,6 +85,7 @@ argstr(int n, char *buf, int max)
 extern uint64 sys_fork(void);
 extern uint64 sys_exit(void);
 extern uint64 sys_wait(void);
+extern uint64 sys_waitx(void);
 extern uint64 sys_pipe(void);
 extern uint64 sys_read(void);
 extern uint64 sys_kill(void);
@@ -106,6 +107,7 @@ extern uint64 sys_close(void);
 extern uint64 sys_trace(void);
 extern uint64 sys_cps(void);
 extern uint64 sys_chpr(void);
+
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -134,6 +136,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_trace]   sys_trace,
 [SYS_cps]     sys_cps,
 [SYS_chpr]    sys_chpr,
+[SYS_waitx]   sys_waitx,
 };
 
 static char *names[] = {
@@ -161,6 +164,7 @@ static char *names[] = {
 [SYS_trace]   "trace",
 [SYS_cps]   "cps",
 [SYS_chpr]   "chpr",
+[SYS_waitx]   "waitx"
 };
 
 int syscallNos[] = {

@@ -121,4 +121,8 @@ struct proc {
   uint64 alarmhandler;
   int alarm_on;
   struct trapframe *alarm_trap;
+
+  uint rtime;                   // How long the process ran for
+  uint ctime;                   // When was the process created 
+  uint etime;                   // When did the process exited
 };

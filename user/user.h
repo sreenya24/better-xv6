@@ -4,6 +4,7 @@ struct stats;
 int fork(void);
 int exit(int) __attribute__((noreturn));
 int wait(int*);
+int waitx(int*, int* /*wtime*/, int* /*rtime*/);
 int pipe(int*);
 int write(int, const void*, int);
 int read(int, void*, int);

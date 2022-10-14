@@ -25,3 +25,4 @@
 #define SYS_trace  24
 #define SYS_cps 25
 #define SYS_chpr 26
+#define SYS_waitx  27
