@@ -31,6 +31,8 @@ exec(char *path, char **argv)
   pagetable_t pagetable = 0, oldpagetable;
   struct proc *p = myproc();
 
+  // printf("1\n");
+
   begin_op();
 
   if((ip = namei(path)) == 0){
@@ -108,6 +110,7 @@ exec(char *path, char **argv)
     goto bad;
   if(copyout(pagetable, sp, (char *)ustack, (argc+1)*sizeof(uint64)) < 0)
     goto bad;
+  // printf("2\n");
 
   // arguments to user main(argc, argv)
   // argc is returned via the system call return
