@@ -23,3 +23,5 @@
 #define SYS_sigalarm 22
 #define SYS_sigreturn 23
 #define SYS_trace  24
+#define SYS_cps 25
+#define SYS_chpr 26

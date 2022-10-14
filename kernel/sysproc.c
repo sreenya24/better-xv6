@@ -100,3 +100,23 @@ sys_trace(void)
 
 	return 0;
 }
+
+int
+sys_cps(void)
+{
+  return cps();
+}
+
+int
+sys_chpr(void)
+{
+  int pid, pr;
+  argint(0, &pid);
+  if(pid < 0)
+    return -1;
+  argint(1, &pr);
+  if(pr < 0)
+    return -1;
+
+  return chpr(pid, pr);
+}
