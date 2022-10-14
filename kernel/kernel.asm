@@ -5409,11 +5409,11 @@ procdump(void)
     80002770:	8082                	ret
 
 0000000080002772 <trapinit>:
+void kernelvec();
 
 extern int devintr();
 
-void
-trapinit(void)
+void trapinit(void)
 {
     80002772:	1141                	addi	sp,sp,-16
     80002774:	e406                	sd	ra,8(sp)
@@ -5435,8 +5435,7 @@ trapinit(void)
 000000008000279a <trapinithart>:
 
 // set up to take exceptions and traps while in the kernel.
-void
-trapinithart(void)
+void trapinithart(void)
 {
     8000279a:	1141                	addi	sp,sp,-16
     8000279c:	e422                	sd	s0,8(sp)
@@ -5489,23 +5488,24 @@ int cowfault(pagetable_t pagetable, uint64 va)
     800027e8:	ffffe097          	auipc	ra,0xffffe
     800027ec:	3fc080e7          	jalr	1020(ra) # 80000be4 <kalloc>
     800027f0:	84aa                	mv	s1,a0
-  if (pa2 == 0){
+  if (pa2 == 0)
     800027f2:	c121                	beqz	a0,80002832 <cowfault+0x80>
-    //panic("cow panic kalloc");
+  {
+    // panic("cow panic kalloc");
     return -1;
   }
- 
+
   memmove((void *)pa2, (void *)pa1, PGSIZE);
     800027f4:	6605                	lui	a2,0x1
     800027f6:	85ca                	mv	a1,s2
     800027f8:	ffffe097          	auipc	ra,0xffffe
     800027fc:	66c080e7          	jalr	1644(ra) # 80000e64 <memmove>
-  *pte = PA2PTE(pa2) | PTE_U | PTE_V | PTE_W | PTE_X|PTE_R;
+  *pte = PA2PTE(pa2) | PTE_U | PTE_V | PTE_W | PTE_X | PTE_R;
     80002800:	80b1                	srli	s1,s1,0xc
     80002802:	04aa                	slli	s1,s1,0xa
     80002804:	01f4e493          	ori	s1,s1,31
     80002808:	0099b023          	sd	s1,0(s3)
-   kfree((void *)pa1);
+  kfree((void *)pa1);
     8000280c:	854a                	mv	a0,s2
     8000280e:	ffffe097          	auipc	ra,0xffffe
     80002812:	252080e7          	jalr	594(ra) # 80000a60 <kfree>
@@ -5534,11 +5534,11 @@ int cowfault(pagetable_t pagetable, uint64 va)
     80002834:	b7d5                	j	80002818 <cowfault+0x66>
 
 0000000080002836 <usertrapret>:
+
 //
 // return to user space
 //
-void
-usertrapret(void)
+void usertrapret(void)
 {
     80002836:	1141                	addi	sp,sp,-16
     80002838:	e406                	sd	ra,8(sp)
@@ -5590,7 +5590,7 @@ usertrapret(void)
     80002884:	00000617          	auipc	a2,0x0
     80002888:	13060613          	addi	a2,a2,304 # 800029b4 <usertrap>
     8000288c:	eb10                	sd	a2,16(a4)
-  p->trapframe->kernel_hartid = r_tp();         // hartid for cpuid()
+  p->trapframe->kernel_hartid = r_tp(); // hartid for cpuid()
     8000288e:	6d38                	ld	a4,88(a0)
   asm volatile("mv %0, tp" : "=r" (x) );
     80002890:	8612                	mv	a2,tp
@@ -5599,7 +5599,7 @@ usertrapret(void)
     80002894:	10002773          	csrr	a4,sstatus
   // set up the registers that trampoline.S's sret will use
   // to get to user space.
-  
+
   // set S Previous Privilege mode to User.
   unsigned long x = r_sstatus();
   x &= ~SSTATUS_SPP; // clear SPP to 0 for user mode
@@ -5622,7 +5622,7 @@ usertrapret(void)
     800028ac:	6928                	ld	a0,80(a0)
     800028ae:	8131                	srli	a0,a0,0xc
 
-  // jump to userret in trampoline.S at the top of memory, which 
+  // jump to userret in trampoline.S at the top of memory, which
   // switches to the user page table, restores user registers,
   // and switches to user mode with sret.
   uint64 trampoline_userret = TRAMPOLINE + (userret - trampoline);
@@ -5642,11 +5642,11 @@ usertrapret(void)
     800028ca:	8082                	ret
 
 00000000800028cc <clockintr>:
+  w_sepc(sepc);
   w_sstatus(sstatus);
 }
 
-void
-clockintr()
+void clockintr()
 {
     800028cc:	1101                	addi	sp,sp,-32
     800028ce:	ec06                	sd	ra,24(sp)
@@ -5680,11 +5680,11 @@ clockintr()
     80002910:	8082                	ret
 
 0000000080002912 <devintr>:
+// and handle it.
 // returns 2 if timer interrupt,
 // 1 if other device,
 // 0 if not recognized.
-int
-devintr()
+int devintr()
 {
     80002912:	1101                	addi	sp,sp,-32
     80002914:	ec06                	sd	ra,24(sp)
@@ -5695,25 +5695,25 @@ devintr()
     8000291c:	14202773          	csrr	a4,scause
   uint64 scause = r_scause();
 
-  if((scause & 0x8000000000000000L) &&
+  if ((scause & 0x8000000000000000L) &&
     80002920:	00074d63          	bltz	a4,8000293a <devintr+0x28>
-    // now allowed to interrupt again.
-    if(irq)
+    if (irq)
       plic_complete(irq);
 
     return 1;
-  } else if(scause == 0x8000000000000001L){
+  }
+  else if (scause == 0x8000000000000001L)
     80002924:	57fd                	li	a5,-1
     80002926:	17fe                	slli	a5,a5,0x3f
     80002928:	0785                	addi	a5,a5,1
-    // the SSIP bit in sip.
-    w_sip(r_sip() & ~2);
 
     return 2;
-  } else {
+  }
+  else
+  {
     return 0;
     8000292a:	4501                	li	a0,0
-  } else if(scause == 0x8000000000000001L){
+  else if (scause == 0x8000000000000001L)
     8000292c:	06f70363          	beq	a4,a5,80002992 <devintr+0x80>
   }
 }
@@ -5722,24 +5722,24 @@ devintr()
     80002934:	64a2                	ld	s1,8(sp)
     80002936:	6105                	addi	sp,sp,32
     80002938:	8082                	ret
-     (scause & 0xff) == 9){
+      (scause & 0xff) == 9)
     8000293a:	0ff77793          	zext.b	a5,a4
-  if((scause & 0x8000000000000000L) &&
+  if ((scause & 0x8000000000000000L) &&
     8000293e:	46a5                	li	a3,9
     80002940:	fed792e3          	bne	a5,a3,80002924 <devintr+0x12>
     int irq = plic_claim();
     80002944:	00003097          	auipc	ra,0x3
     80002948:	544080e7          	jalr	1348(ra) # 80005e88 <plic_claim>
     8000294c:	84aa                	mv	s1,a0
-    if(irq == UART0_IRQ){
+    if (irq == UART0_IRQ)
     8000294e:	47a9                	li	a5,10
     80002950:	02f50763          	beq	a0,a5,8000297e <devintr+0x6c>
-    } else if(irq == VIRTIO0_IRQ){
+    else if (irq == VIRTIO0_IRQ)
     80002954:	4785                	li	a5,1
     80002956:	02f50963          	beq	a0,a5,80002988 <devintr+0x76>
     return 1;
     8000295a:	4505                	li	a0,1
-    } else if(irq){
+    else if (irq)
     8000295c:	d8f1                	beqz	s1,80002930 <devintr+0x1e>
       printf("unexpected interrupt irq=%d\n", irq);
     8000295e:	85a6                	mv	a1,s1
@@ -5762,7 +5762,7 @@ devintr()
     80002988:	00004097          	auipc	ra,0x4
     8000298c:	9ec080e7          	jalr	-1556(ra) # 80006374 <virtio_disk_intr>
     80002990:	b7c5                	j	80002970 <devintr+0x5e>
-    if(cpuid() == 0){
+    if (cpuid() == 0)
     80002992:	fffff097          	auipc	ra,0xfffff
     80002996:	13e080e7          	jalr	318(ra) # 80001ad0 <cpuid>
     8000299a:	c901                	beqz	a0,800029aa <devintr+0x98>
@@ -5790,7 +5790,7 @@ devintr()
     800029be:	1000                	addi	s0,sp,32
   asm volatile("csrr %0, sstatus" : "=r" (x) );
     800029c0:	100027f3          	csrr	a5,sstatus
-  if((r_sstatus() & SSTATUS_SPP) != 0)
+  if ((r_sstatus() & SSTATUS_SPP) != 0)
     800029c4:	1007f793          	andi	a5,a5,256
     800029c8:	e7b9                	bnez	a5,80002a16 <usertrap+0x62>
   asm volatile("csrw stvec, %0" : : "r" (x));
@@ -5812,15 +5812,15 @@ devintr()
     800029ec:	47bd                	li	a5,15
     800029ee:	02f70c63          	beq	a4,a5,80002a26 <usertrap+0x72>
     800029f2:	14202773          	csrr	a4,scause
-  else if(r_scause() == 8){
+  else if (r_scause() == 8)
     800029f6:	47a1                	li	a5,8
     800029f8:	04f70363          	beq	a4,a5,80002a3e <usertrap+0x8a>
-  } else if((which_dev = devintr()) != 0){
+  else if ((which_dev = devintr()) != 0)
     800029fc:	00000097          	auipc	ra,0x0
     80002a00:	f16080e7          	jalr	-234(ra) # 80002912 <devintr>
     80002a04:	892a                	mv	s2,a0
     80002a06:	c549                	beqz	a0,80002a90 <usertrap+0xdc>
-  if(killed(p))
+  if (killed(p))
     80002a08:	8526                	mv	a0,s1
     80002a0a:	00000097          	auipc	ra,0x0
     80002a0e:	a42080e7          	jalr	-1470(ra) # 8000244c <killed>
@@ -5833,16 +5833,16 @@ devintr()
     80002a22:	b22080e7          	jalr	-1246(ra) # 80000540 <panic>
   asm volatile("csrr %0, stval" : "=r" (x) );
     80002a26:	143025f3          	csrr	a1,stval
-   if ((cowfault(p->pagetable, r_stval()) )< 0)
+    if ((cowfault(p->pagetable, r_stval())) < 0)
     80002a2a:	6928                	ld	a0,80(a0)
     80002a2c:	00000097          	auipc	ra,0x0
     80002a30:	d86080e7          	jalr	-634(ra) # 800027b2 <cowfault>
     80002a34:	02055863          	bgez	a0,80002a64 <usertrap+0xb0>
-     p->killed = 1;
+      p->killed = 1;
     80002a38:	4785                	li	a5,1
     80002a3a:	d49c                	sw	a5,40(s1)
     80002a3c:	a025                	j	80002a64 <usertrap+0xb0>
-    if(killed(p))
+    if (killed(p))
     80002a3e:	00000097          	auipc	ra,0x0
     80002a42:	a0e080e7          	jalr	-1522(ra) # 8000244c <killed>
     80002a46:	ed1d                	bnez	a0,80002a84 <usertrap+0xd0>
@@ -5860,7 +5860,7 @@ devintr()
     syscall();
     80002a5c:	00000097          	auipc	ra,0x0
     80002a60:	2d4080e7          	jalr	724(ra) # 80002d30 <syscall>
-  if(killed(p))
+  if (killed(p))
     80002a64:	8526                	mv	a0,s1
     80002a66:	00000097          	auipc	ra,0x0
     80002a6a:	9e6080e7          	jalr	-1562(ra) # 8000244c <killed>
@@ -5902,13 +5902,13 @@ devintr()
     80002ac0:	00000097          	auipc	ra,0x0
     80002ac4:	960080e7          	jalr	-1696(ra) # 80002420 <setkilled>
     80002ac8:	bf71                	j	80002a64 <usertrap+0xb0>
-  if(killed(p))
+  if (killed(p))
     80002aca:	4901                	li	s2,0
     exit(-1);
     80002acc:	557d                	li	a0,-1
     80002ace:	00000097          	auipc	ra,0x0
     80002ad2:	80a080e7          	jalr	-2038(ra) # 800022d8 <exit>
-  if(which_dev == 2)
+  if (which_dev == 2)
     80002ad6:	4789                	li	a5,2
     80002ad8:	f8f91ce3          	bne	s2,a5,80002a70 <usertrap+0xbc>
     yield();
@@ -5931,20 +5931,20 @@ devintr()
     80002af8:	100024f3          	csrr	s1,sstatus
   asm volatile("csrr %0, scause" : "=r" (x) );
     80002afc:	142029f3          	csrr	s3,scause
-  if((sstatus & SSTATUS_SPP) == 0)
+  if ((sstatus & SSTATUS_SPP) == 0)
     80002b00:	1004f793          	andi	a5,s1,256
     80002b04:	cb85                	beqz	a5,80002b34 <kerneltrap+0x4e>
   asm volatile("csrr %0, sstatus" : "=r" (x) );
     80002b06:	100027f3          	csrr	a5,sstatus
   return (x & SSTATUS_SIE) != 0;
     80002b0a:	8b89                	andi	a5,a5,2
-  if(intr_get() != 0)
+  if (intr_get() != 0)
     80002b0c:	ef85                	bnez	a5,80002b44 <kerneltrap+0x5e>
-  if((which_dev = devintr()) == 0){
+  if ((which_dev = devintr()) == 0)
     80002b0e:	00000097          	auipc	ra,0x0
     80002b12:	e04080e7          	jalr	-508(ra) # 80002912 <devintr>
     80002b16:	cd1d                	beqz	a0,80002b54 <kerneltrap+0x6e>
-  if(which_dev == 2 && myproc() != 0 && myproc()->state == RUNNING)
+  if (which_dev == 2 && myproc() != 0 && myproc()->state == RUNNING)
     80002b18:	4789                	li	a5,2
     80002b1a:	06f50a63          	beq	a0,a5,80002b8e <kerneltrap+0xa8>
   asm volatile("csrw sepc, %0" : : "r" (x));
@@ -5989,7 +5989,7 @@ devintr()
     80002b82:	8ba50513          	addi	a0,a0,-1862 # 80008438 <states.0+0x138>
     80002b86:	ffffe097          	auipc	ra,0xffffe
     80002b8a:	9ba080e7          	jalr	-1606(ra) # 80000540 <panic>
-  if(which_dev == 2 && myproc() != 0 && myproc()->state == RUNNING)
+  if (which_dev == 2 && myproc() != 0 && myproc()->state == RUNNING)
     80002b8e:	fffff097          	auipc	ra,0xfffff
     80002b92:	f6e080e7          	jalr	-146(ra) # 80001afc <myproc>
     80002b96:	d541                	beqz	a0,80002b1e <kerneltrap+0x38>
