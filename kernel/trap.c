@@ -112,6 +112,23 @@ void usertrap(void)
     yield();
 
   usertrapret();
+  
+  //Alarm handling in user trap
+  if((which_dev = devintr()) != 0){
+  if (which_dev == 2 && p->alarm_on == 0) 
+  {
+    p->alarm_on = 1;
+    struct trapframe *tf = kalloc();
+    memmove(tf, p->trapframe, PGSIZE);
+    p->alarm_trap = tf;
+
+    p->curticks++;
+    if (p->curticks >= p->ticks)
+    {
+      p->trapframe->epc = p->alarmhandler;
+    }
+   }
+  }
 }
 
 //
